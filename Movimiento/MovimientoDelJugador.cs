@@ -18,6 +18,8 @@ public class MovimientoDelJugador : MonoBehaviour
     private float radioDeLaEsfera = 0.4f;
     [SerializeField]
     private LayerMask mascaraDelSuelo;
+    //Audios
+    public AudioSource caminar;
     
     //Funcion para chequear si el radio de la esfera de los pies toca el suelo
     private bool EsSuelo()
@@ -37,7 +39,6 @@ public class MovimientoDelJugador : MonoBehaviour
             LayerMask colisionDeMascara = hitInfo.collider.gameObject.layer;
             if((mascaraDelSuelo & (1 << colisionDeMascara))!=0)
             {
-                Debug.Log("hola");
                 return true; 
             }
         }
@@ -57,9 +58,23 @@ public class MovimientoDelJugador : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.LeftAlt)) correr = 2.5f;
         //Aplicar movimiento
         jugadorM.Move(move * velocidad * correr * Time.deltaTime);
+
+
+
+        if ((move.x != 0 || move.z != 0)&& !caminar.isPlaying)
+        {
+            caminar.Play();
+        }
+        else if((move.x == 0 || move.z == 0) && caminar.isPlaying)
+                caminar.Stop();
+
         //Saltar
         if (Input.GetKeyDown(KeyCode.Space) && EsSuelo())
+        {
+            //if (caminar.isPlaying)
+            //    caminar.Stop();
             velocidadDeCaida.y = Mathf.Sqrt(salto * -2f * gravedad);
+        }
         //Gravedad
         if (ChequearDistancia() && velocidadDeCaida.y < 0)
             velocidadDeCaida.y = -2f;
